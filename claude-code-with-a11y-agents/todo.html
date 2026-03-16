@@ -196,7 +196,8 @@
 
     .priority-btn[data-priority="now"]       { background: #c0392b; color: #ffffff; }
     .priority-btn[data-priority="this-week"] { background: #ffd93d; color: #1a1a00; }
-    .priority-btn[data-priority="later"]     { background: #27ae60; color: #ffffff; }
+    /* #1a7a3a on white: ~5.4:1 — passes WCAG AA. #27ae60 was only ~2.9:1 */
+    .priority-btn[data-priority="later"]     { background: #1a7a3a; color: #ffffff; }
 
     /* Inline priority select (replaces badge during change) */
     .priority-select {
@@ -620,8 +621,20 @@
         if (e.key === 'Escape') { e.preventDefault(); cancelChange(true); }
       });
 
-      // Blur (Tab away) cancels without stealing focus from wherever Tab moved to
-      sel.addEventListener('blur', () => cancelChange(false));
+      // Blur (Tab away): commit if value changed, cancel silently if unchanged.
+      // Never steal focus — Tab has already moved it to the next element.
+      sel.addEventListener('blur', () => {
+        if (committed) return;
+        committed = true;
+        if (sel.value !== originalPriority) {
+          const newPriority = sel.value;
+          todo.priority = newPriority;
+          render();
+          announce(`Priority changed to ${PRIORITY_HUMAN[newPriority]}`);
+        } else {
+          render(); // No change; restore badge silently
+        }
+      });
 
       priorityBtn.replaceWith(sel);
       sel.focus();
