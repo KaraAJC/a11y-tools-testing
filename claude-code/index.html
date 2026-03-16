@@ -194,7 +194,51 @@
   </div>
 
   <script>
-    /* JS goes here in later tasks */
+    // --- State ---
+    let todos = [];
+    let nextId = 1;
+    let sortByPriority = false;
+
+    const PRIORITY_ORDER = { now: 0, 'this-week': 1, later: 2 };
+    const PRIORITY_LABEL = { now: 'Now', 'this-week': 'This Week', later: 'Later' };
+    const PRIORITY_BADGE_CLASS = { now: 'badge-now', 'this-week': 'badge-this-week', later: 'badge-later' };
+    const PRIORITY_ITEM_CLASS = { now: 'priority-now', 'this-week': 'priority-this-week', later: 'priority-later' };
+    const PRIORITY_CYCLE = { now: 'this-week', 'this-week': 'later', later: 'now' };
+
+    // --- Render ---
+    function render() {
+      const list = document.getElementById('todo-list');
+      const sortBtn = document.getElementById('sort-toggle');
+
+      sortBtn.textContent = sortByPriority ? 'Remove Sort' : 'Sort by Priority';
+      sortBtn.classList.toggle('active', sortByPriority);
+
+      if (todos.length === 0) {
+        list.innerHTML = '<li class="empty-message">No todos yet — add one above.</li>';
+        return;
+      }
+
+      const displayed = sortByPriority
+        ? [...todos].sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority])
+        : todos;
+
+      list.innerHTML = displayed.map(todo => `
+        <li class="todo-item ${PRIORITY_ITEM_CLASS[todo.priority]}" data-id="${todo.id}">
+          <span class="todo-text" data-action="edit" data-id="${todo.id}">${escapeHtml(todo.text)}</span>
+          <button class="priority-badge ${PRIORITY_BADGE_CLASS[todo.priority]}" data-action="cycle-priority" data-id="${todo.id}">
+            ${PRIORITY_LABEL[todo.priority]}
+          </button>
+          <button class="delete-btn" data-action="delete" data-id="${todo.id}" aria-label="Delete todo">&#x2715;</button>
+        </li>
+      `).join('');
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // Initial render
+    render();
   </script>
 </body>
 </html>
