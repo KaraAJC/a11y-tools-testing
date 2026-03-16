@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tasks</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-bg: #ffffff;
+      --color-bg-secondary: #f5f4f0;
+      --color-text-primary: #1a1a18;
+      --color-text-secondary: #6b6a66;
+      --color-text-tertiary: #9e9d99;
+      --color-border-tertiary: rgba(0,0,0,0.12);
+      --color-border-secondary: rgba(0,0,0,0.22);
+      --color-border-primary: rgba(0,0,0,0.36);
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --font-sans: system-ui, -apple-system, sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-bg: #1c1c1a;
+        --color-bg-secondary: #252523;
+        --color-text-primary: #e8e6df;
+        --color-text-secondary: #9e9d99;
+        --color-text-tertiary: #6b6a66;
+        --color-border-tertiary: rgba(255,255,255,0.10);
+        --color-border-secondary: rgba(255,255,255,0.20);
+        --color-border-primary: rgba(255,255,255,0.32);
+      }
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      min-height: 100vh;
+    }
+
+    *:focus-visible {
+      outline: 2px solid var(--color-border-primary);
+      outline-offset: 2px;
+    }
+
+    .app {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 4rem;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--color-text-primary);
+      margin: 0 0 1.75rem;
+    }
+
+    .add-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 2rem;
+    }
+
+    .add-row input {
+      flex: 1;
+      height: 36px;
+      padding: 0 12px;
+      border: 0.5px solid var(--color-border-secondary);
+      border-radius: var(--radius-md);
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      font-size: 15px;
+      font-family: var(--font-sans);
+    }
+
+    .add-row select,
+    .controls select,
+    .edit-select {
+      height: 36px;
+      padding: 0 8px;
+      border: 0.5px solid var(--color-border-secondary);
+      border-radius: var(--radius-md);
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      font-size: 14px;
+      font-family: var(--font-sans);
+    }
+
+    .add-row button {
+      height: 36px;
+      padding: 0 16px;
+      border: 0.5px solid var(--color-border-secondary);
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--color-text-primary);
+      font-size: 14px;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .add-row button:hover { background: var(--color-bg-secondary); }
+    .add-row button:active { transform: scale(0.98); }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .controls label {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .controls select { height: 30px; font-size: 13px; }
+
+    .empty {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--color-text-tertiary);
+      font-size: 15px;
+    }
+
+    ol {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .todo-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--color-bg);
+      border: 0.5px solid var(--color-border-tertiary);
+      border-radius: var(--radius-lg);
+      padding: 12px 14px;
+    }
+
+    .todo-item:hover { border-color: var(--color-border-secondary); }
+
+    .badge {
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+
+    .badge-now  { background: #FAECE7; color: #993C1D; }
+    .badge-week { background: #FAEEDA; color: #854F0B; }
+    .badge-later{ background: #EAF3DE; color: #3B6D11; }
+
+    @media (prefers-color-scheme: dark) {
+      .badge-now  { background: #4A1B0C; color: #F0997B; }
+      .badge-week { background: #412402; color: #EF9F27; }
+      .badge-later{ background: #173404; color: #97C459; }
+    }
+
+    .todo-text {
+      flex: 1;
+      font-size: 15px;
+      color: var(--color-text-primary);
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .edit-input {
+      flex: 1;
+      font-size: 15px;
+      font-family: var(--font-sans);
+      color: var(--color-text-primary);
+      background: var(--color-bg-secondary);
+      border: 0.5px solid var(--color-border-primary);
+      border-radius: var(--radius-md);
+      padding: 4px 8px;
+      height: 32px;
+    }
+
+    .edit-select { height: 32px; font-size: 13px; }
+
+    .icon-btn {
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      border-radius: var(--radius-md);
+      border: 0.5px solid var(--color-border-tertiary);
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-secondary);
+    }
+
+    .icon-btn:hover {
+      background: var(--color-bg-secondary);
+      border-color: var(--color-border-secondary);
+      color: var(--color-text-primary);
+    }
+
+    .icon-btn:active { transform: scale(0.96); }
+
+    .icon-btn.danger:hover { background: #FCEBEB; color: #A32D2D; border-color: #F09595; }
+
+    @media (prefers-color-scheme: dark) {
+      .icon-btn.danger:hover { background: #501313; color: #F09595; border-color: #A32D2D; }
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <h1>Tasks</h1>
+
+    <div class="add-row">
+      <label for="new-todo" class="sr-only">New task</label>
+      <input type="text" id="new-todo" placeholder="Add a task…" autocomplete="off" />
+      <select id="new-priority" aria-label="Priority">
+        <option value="now">Now</option>
+        <option value="week">This week</option>
+        <option value="later" selected>Later</option>
+      </select>
+      <button type="button" id="add-btn">Add</button>
+    </div>
+
+    <div class="controls">
+      <span id="task-count" style="font-size:13px;color:var(--color-text-secondary)">0 tasks</span>
+      <label for="sort-select">Sort by
+        <select id="sort-select">
+          <option value="added">Date added</option>
+          <option value="priority">Priority</option>
+        </select>
+      </label>
+    </div>
+
+    <div role="alert" id="live-region" class="sr-only"></div>
+
+    <ol id="todo-list" aria-label="Task list"></ol>
+    <p class="empty" id="empty-msg">No tasks yet. Add one above.</p>
+  </main>
+
+  <script>
+    const PRIORITY_ORDER  = { now: 0, week: 1, later: 2 };
+    const PRIORITY_LABELS = { now: 'Now', week: 'This week', later: 'Later' };
+    const BADGE_CLASS     = { now: 'badge-now', week: 'badge-week', later: 'badge-later' };
+
+    let todos    = [];
+    let nextId   = 1;
+    let editingId = null;
+
+    const listEl      = document.getElementById('todo-list');
+    const emptyMsg    = document.getElementById('empty-msg');
+    const countEl     = document.getElementById('task-count');
+    const liveRegion  = document.getElementById('live-region');
+    const sortSelect  = document.getElementById('sort-select');
+    const newInput    = document.getElementById('new-todo');
+    const newPriority = document.getElementById('new-priority');
+
+    function announce(msg) {
+      liveRegion.textContent = '';
+      setTimeout(() => { liveRegion.textContent = msg; }, 50);
+    }
+
+    function getSorted() {
+      if (sortSelect.value === 'priority') {
+        return [...todos].sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]);
+      }
+      return [...todos];
+    }
+
+    function render() {
+      const sorted = getSorted();
+      emptyMsg.hidden = todos.length > 0;
+      countEl.textContent = todos.length === 1 ? '1 task' : `${todos.length} tasks`;
+      listEl.innerHTML = '';
+
+      sorted.forEach(todo => {
+        const li = document.createElement('li');
+        li.className = 'todo-item';
+        li.dataset.id = todo.id;
+
+        if (editingId === todo.id) {
+          const inp = document.createElement('input');
+          inp.type = 'text';
+          inp.className = 'edit-input';
+          inp.value = todo.text;
+          inp.setAttribute('aria-label', 'Edit task text');
+
+          const sel = document.createElement('select');
+          sel.className = 'edit-select';
+          sel.setAttribute('aria-label', 'Edit priority');
+          ['now','week','later'].forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p;
+            opt.textContent = PRIORITY_LABELS[p];
+            if (p === todo.priority) opt.selected = true;
+            sel.appendChild(opt);
+          });
+
+          const saveBtn = document.createElement('button');
+          saveBtn.className = 'icon-btn';
+          saveBtn.setAttribute('aria-label', 'Save task');
+          saveBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,7 5.5,10.5 12,3.5"/></svg>`;
+
+          const cancelBtn = document.createElement('button');
+          cancelBtn.className = 'icon-btn';
+          cancelBtn.setAttribute('aria-label', 'Cancel editing');
+          cancelBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="2" x2="12" y2="12"/><line x1="12" y1="2" x2="2" y2="12"/></svg>`;
+
+          const save = () => {
+            const val = inp.value.trim();
+            if (!val) { inp.focus(); return; }
+            const t = todos.find(x => x.id === todo.id);
+            if (t) { t.text = val; t.priority = sel.value; }
+            editingId = null;
+            render();
+            announce('Task updated.');
+          };
+
+          saveBtn.addEventListener('click', save);
+          cancelBtn.addEventListener('click', () => { editingId = null; render(); });
+          inp.addEventListener('keydown', e => {
+            if (e.key === 'Enter') save();
+            if (e.key === 'Escape') { editingId = null; render(); }
+          });
+
+          li.appendChild(inp);
+          li.appendChild(sel);
+          li.appendChild(saveBtn);
+          li.appendChild(cancelBtn);
+          setTimeout(() => inp.focus(), 0);
+        } else {
+          const badge = document.createElement('span');
+          badge.className = `badge ${BADGE_CLASS[todo.priority]}`;
+          badge.textContent = PRIORITY_LABELS[todo.priority];
+
+          const span = document.createElement('span');
+          span.className = 'todo-text';
+          span.textContent = todo.text;
+
+          const editBtn = document.createElement('button');
+          editBtn.className = 'icon-btn';
+          editBtn.setAttribute('aria-label', `Edit task: ${todo.text}`);
+          editBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2.5 L11.5 4.5 L5 11 L2 12 L3 9 Z"/></svg>`;
+          editBtn.addEventListener('click', () => { editingId = todo.id; render(); });
+
+          const delBtn = document.createElement('button');
+          delBtn.className = 'icon-btn danger';
+          delBtn.setAttribute('aria-label', `Delete task: ${todo.text}`);
+          delBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="2,3.5 12,3.5"/><path d="M5.5,3.5 L5.5,2 L8.5,2 L8.5,3.5"/><path d="M3.5,3.5 L4,12 L10,12 L10.5,3.5"/></svg>`;
+          delBtn.addEventListener('click', () => {
+            const txt = todo.text;
+            todos = todos.filter(x => x.id !== todo.id);
+            if (editingId === todo.id) editingId = null;
+            render();
+            announce(`Deleted task: ${txt}`);
+          });
+
+          li.appendChild(badge);
+          li.appendChild(span);
+          li.appendChild(editBtn);
+          li.appendChild(delBtn);
+        }
+
+        listEl.appendChild(li);
+      });
+    }
+
+    document.getElementById('add-btn').addEventListener('click', () => {
+      const text = newInput.value.trim();
+      if (!text) { newInput.focus(); return; }
+      todos.push({ id: nextId++, text, priority: newPriority.value });
+      newInput.value = '';
+      newInput.focus();
+      render();
+      announce(`Added task: ${text}`);
+    });
+
+    newInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('add-btn').click();
+    });
+
+    sortSelect.addEventListener('change', render);
+
+    render();
+  </script>
+</body>
+</html>
