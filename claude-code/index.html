@@ -32,7 +32,6 @@
     h1 {
       font-size: 1.75rem;
       font-weight: 700;
-      color: #cdd6f4;
     }
 
     button {
@@ -136,7 +135,6 @@
       letter-spacing: 0.05em;
       white-space: nowrap;
       border: none;
-      transition: opacity 0.15s;
     }
     .priority-badge:hover { opacity: 0.8; }
     .badge-now       { background: #f38ba8; color: #1e1e2e; }
@@ -159,7 +157,7 @@
       padding: 2rem 0;
     }
 
-    label {
+    .visually-hidden {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -167,6 +165,7 @@
       margin: -1px;
       overflow: hidden;
       clip: rect(0,0,0,0);
+      clip-path: inset(50%);
       white-space: nowrap;
       border: 0;
     }
@@ -180,9 +179,9 @@
     </header>
 
     <form id="add-form">
-      <label for="new-todo-input">New todo</label>
+      <label for="new-todo-input" class="visually-hidden">New todo</label>
       <input type="text" id="new-todo-input" placeholder="Add a new todo..." autocomplete="off">
-      <label for="priority-select">Priority</label>
+      <label for="priority-select" class="visually-hidden">Priority</label>
       <select id="priority-select">
         <option value="now">Now</option>
         <option value="this-week">This Week</option>
