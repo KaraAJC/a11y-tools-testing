@@ -249,6 +249,7 @@
       const priority = document.getElementById('priority-select').value;
       todos.push({ id: nextId++, text, priority, createdAt: Date.now() });
       input.value = '';
+      input.focus();
       render();
     });
   </script>
