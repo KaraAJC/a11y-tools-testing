@@ -7,6 +7,7 @@
 Build a Todo list website that allows a person to add todos one at a time, edit their todos inline, and delete their todos. A todo can also have a priority status of now, this week, or later. todos can be sorted by priority status (now to this week, to later)
 
 ### response
+
 I'll create a modern todo list website with all the features you requested. This will be a complete, interactive HTML application with inline editing, priority management, and sorting functionality.
 
 _Todo List_
