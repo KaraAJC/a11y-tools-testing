@@ -205,6 +205,10 @@
     const PRIORITY_ITEM_CLASS = { now: 'priority-now', 'this-week': 'priority-this-week', later: 'priority-later' };
     const PRIORITY_CYCLE = { now: 'this-week', 'this-week': 'later', later: 'now' };
 
+    function escapeHtml(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+
     // --- Render ---
     function render() {
       const list = document.getElementById('todo-list');
@@ -231,10 +235,6 @@
           <button class="delete-btn" data-action="delete" data-id="${todo.id}" aria-label="Delete todo">&#x2715;</button>
         </li>
       `).join('');
-    }
-
-    function escapeHtml(str) {
-      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     // Initial render
