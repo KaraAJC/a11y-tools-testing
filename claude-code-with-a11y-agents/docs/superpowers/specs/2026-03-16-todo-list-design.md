@@ -1,7 +1,7 @@
 # Todo List Website — Design Spec
 
 **Date:** 2026-03-16
-**Status:** Approved
+**Status:** Approved (v2 — spec review fixes applied)
 
 ---
 
@@ -27,14 +27,17 @@ A single self-contained HTML file implementing a Todo list with add, inline-edit
 ## Data Model
 
 ```js
-let todos = [];       // [{ id: number, text: string, priority: 'now' | 'this-week' | 'later' }]
+let todos = [];          // [{ id: number, text: string, priority: 'now' | 'this-week' | 'later' }]
 let sortEnabled = false;
+let editingId = null;    // number | null — the id of the todo currently being edited, or null
+let nextId = 1;          // incrementing counter for new todo ids
 ```
 
-- `id`: incrementing integer
+- `id`: integer, assigned from `nextId` at creation time
 - `priority`: one of `"now"`, `"this-week"`, `"later"`
 - Sort order (when enabled): `now → this-week → later`
 - Underlying array stays in insertion order; sort is applied only during render
+- `editingId` is set when the pencil button is clicked and cleared after save or cancel
 
 ---
 
@@ -46,8 +49,10 @@ let sortEnabled = false;
     <h1>My Todos</h1>
 
     <form id="add-form">
-      <input type="text" aria-label="New todo text" required>
-      <select aria-label="Priority">
+      <label for="new-todo-input">New todo</label>
+      <input id="new-todo-input" type="text" required>
+      <label for="new-todo-priority">Priority</label>
+      <select id="new-todo-priority">
         <option value="now">Now</option>
         <option value="this-week">This Week</option>
         <option value="later" selected>Later</option>
@@ -86,30 +91,37 @@ When changing priority, the badge button is replaced with an inline `<select>`.
 
 ### Add
 - User types text, selects priority from dropdown, submits form
+- Browser `required` validation blocks empty submission — no custom error UI needed
+- Duplicate text is allowed (todos are distinguished by `id`, not text)
+- Todo text is trimmed of leading/trailing whitespace before saving
 - New todo pushed to `todos`, `render()` called
 - Live region announces "Added: [text]"
 - Input cleared, focus stays on text input
 
 ### Edit
-- Click pencil button → `editingId` set, `render()` called
-- `<span>` replaced with pre-filled `<input>` + Save/Cancel buttons
-- Enter or blur → saves, clears `editingId`, re-renders, announces "Updated: [text]"
-- Escape → cancels, re-renders, focus returns to pencil button
+- Click pencil button → `editingId` set, `render()` called; focus moves to the inline input
+- `<span>` replaced with a pre-filled `<input>` + explicit **Save** and **Cancel** buttons
+- **Save** button click or Enter keypress → saves, clears `editingId`, re-renders, announces "Updated: [text]"
+- **Cancel** button click or Escape keypress → cancels, clears `editingId`, re-renders, focus returns to pencil button
+- **Blur does NOT save** — blur is ignored so that clicking Cancel works without triggering a save first
+- If the user clears the input and attempts to save (Enter or Save button), the edit is rejected and the input receives focus with an `aria-describedby` error message: "Todo text cannot be empty." The edit field stays open.
+- No character limit; long text wraps within the `<li>`; `aria-label` values use the full text (acceptable for typical todo lengths)
 
 ### Change Priority
-- Click priority badge → badge replaced with inline `<select>` at current value
-- `change` event → saves immediately, re-renders, announces "Priority changed to [value]"
-- Escape → cancels without saving
+- Click priority badge → badge replaced with inline `<select>` at current value; focus moves to the `<select>`
+- `change` event → saves immediately, re-renders, announces "Priority changed to [label]" (using human-readable label, not the value key)
+- Escape → cancels without saving; focus returns to the priority badge button
+- Blur (tab away without changing value) → cancels without saving; treated the same as Escape
 
 ### Delete
 - Click ✕ → item removed from `todos`, re-renders
-- Focus moves to: next item's delete button → previous item's delete button → add input
+- Focus moves to: next item's delete button → previous item's delete button → add input (if list is empty)
 - Announces "Deleted: [text]"
 
 ### Sort Toggle
 - `aria-pressed` toggled between `"true"` and `"false"`
-- When enabled: list rendered in `now → this-week → later` order
-- When disabled: original insertion order
+- When enabled: list rendered in `now → this-week → later` order; announces "Sorted by priority"
+- When disabled: original insertion order restored; announces "Original order restored"
 
 ---
 
@@ -131,11 +143,13 @@ When changing priority, the badge button is replaced with an inline `<select>`.
 - Every interactive element keyboard-accessible natively (no `tabindex` hacks)
 - Priority badge conveys label in text AND color — never color alone
 - All buttons have descriptive `aria-label` values that include todo text
-- `role="status"` live region announces all state changes (add, edit, delete, priority change)
+- `role="status"` live region announces all state changes (add, edit, delete, priority change, sort toggle)
 - Focus managed explicitly on delete (returns to next/previous item or add input)
-- Focus set to inline edit input when edit mode activates
+- Focus set to inline edit input when edit mode activates; returns to pencil button on cancel
 - Sort button uses `aria-pressed` for toggle state
 - `sr-only` class for visually-hidden live region
+- Visible `<label>` elements for all form inputs in the add form (not aria-label-only)
+- Inline edit empty-text error message associated via `aria-describedby`
 
 ---
 
@@ -143,11 +157,13 @@ When changing priority, the badge button is replaced with an inline `<select>`.
 
 - `<body>`: gradient background (`#667eea → #764ba2`)
 - `<main>`: glass-morphism card (`rgba(255,255,255,0.15)`, `backdrop-filter: blur`)
-- Priority badge colors:
-  - Now: `#ff6b6b` (red)
-  - This Week: `#ffd93d` (yellow, dark text for contrast)
-  - Later: `#6bcb77` (green)
-- All colors meet WCAG AA contrast requirements (4.5:1 for text, 3:1 for UI components)
+- Priority badge colors (text on badge background must meet 4.5:1):
+  - Now: `#ff6b6b` background, white text (`#ffffff`) — verify contrast at implementation
+  - This Week: `#ffd93d` background — **use dark text `#1a1a00`** (not white; yellow + white fails 4.5:1)
+  - Later: `#6bcb77` background, white text (`#ffffff`) — verify contrast at implementation
+- Badge text is also the label (e.g., "NOW", "THIS WEEK", "LATER") — never color alone
+- The glass-morphism card background is semi-transparent; badges must be verified against their actual rendered background, not just the badge color in isolation
+- All colors must be verified against WCAG AA (4.5:1 for text, 3:1 for UI components) at implementation time using a contrast checker
 
 ---
 
