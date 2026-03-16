@@ -496,6 +496,8 @@
       announce(`Deleted: ${deletedText}`);
 
       // Move focus: next item → previous item → add input
+      // idx is visual (sorted) position; updatedItems preserves the same sort order,
+      // so idx still points to the item that followed the deleted one.
       const updatedItems = Array.from(document.querySelectorAll('#todo-list li[data-id]'));
       const target = updatedItems[idx] || updatedItems[idx - 1];
       if (target) {
@@ -579,7 +581,11 @@
       const input = document.getElementById('new-todo-input');
       const priority = document.getElementById('new-todo-priority').value;
       const text = input.value.trim();
-      if (!text) return; // Belt-and-suspenders; browser required handles this
+      if (!text) {
+        announce('Please enter todo text.');
+        input.focus();
+        return;
+      }
       addTodo(text, priority);
       input.value = '';
       input.focus();
