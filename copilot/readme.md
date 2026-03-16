@@ -13,5 +13,3 @@ Build a Todo list website that allows a person to add todos one at a time, edit 
 export the code for this todo list website
 
 ### Response
-
-Here's your todo.html — a single self-contained file with all the HTML, CSS, and JavaScript in one place. Just open it in any browser and it's ready to go. No build steps, no dependencies to install.

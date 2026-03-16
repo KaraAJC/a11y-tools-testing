@@ -1,0 +1,261 @@
+:root {
+  --bg-top: #f6efe4;
+  --bg-bottom: #d2e5d0;
+  --panel: rgba(255, 252, 246, 0.86);
+  --text-main: #1f2a2a;
+  --text-soft: #4a5a58;
+  --line: #d8d3c7;
+  --accent: #d35c39;
+  --accent-strong: #b8492c;
+  --chip-now: #c93a1f;
+  --chip-week: #cc7f18;
+  --chip-later: #4e7f53;
+  --shadow: 0 20px 55px rgba(31, 42, 42, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  color: var(--text-main);
+  background: linear-gradient(145deg, var(--bg-top), var(--bg-bottom));
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+}
+
+.app-shell {
+  width: min(920px, 100%);
+  background: var(--panel);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
+  padding: clamp(1rem, 2.6vw, 2rem);
+  animation: rise-in 420ms ease-out;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-family: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+}
+
+.kicker {
+  margin: 0;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.subtitle {
+  margin-top: 0.45rem;
+  margin-bottom: 1.2rem;
+  color: var(--text-soft);
+}
+
+.todo-form {
+  display: grid;
+  grid-template-columns: 1fr 180px auto;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field span {
+  font-size: 0.87rem;
+  color: var(--text-soft);
+}
+
+input,
+select,
+button {
+  font: inherit;
+}
+
+input,
+select {
+  width: 100%;
+  background: #fffdf8;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.62rem 0.72rem;
+  color: var(--text-main);
+}
+
+input:focus,
+select:focus,
+button:focus-visible,
+.todo-text:focus {
+  outline: 3px solid rgba(211, 92, 57, 0.28);
+  outline-offset: 2px;
+}
+
+.toolbar {
+  margin-top: 0.95rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.todo-count {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.9rem;
+}
+
+.btn {
+  border: 0;
+  border-radius: 12px;
+  padding: 0.64rem 0.95rem;
+  cursor: pointer;
+  transition: transform 120ms ease, background-color 180ms ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn.primary {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn.primary:hover {
+  background: var(--accent-strong);
+}
+
+.btn.ghost {
+  border: 1px solid var(--line);
+  background: #fffef8;
+  color: var(--text-main);
+}
+
+.todo-list {
+  list-style: none;
+  margin: 1.1rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.68rem;
+}
+
+.todo-item {
+  border: 1px solid #ddd8cb;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 0.68rem;
+  display: grid;
+  gap: 0.65rem;
+  animation: fade-up 280ms ease;
+}
+
+.todo-main {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.todo-text {
+  border: 0;
+  background: transparent;
+  width: 100%;
+  color: var(--text-main);
+  border-radius: 8px;
+  padding: 0.45rem;
+}
+
+.todo-text[readonly] {
+  padding-left: 0.15rem;
+}
+
+.priority-chip {
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.26rem 0.58rem;
+  white-space: nowrap;
+}
+
+.priority-now {
+  background: var(--chip-now);
+}
+
+.priority-this-week {
+  background: var(--chip-week);
+}
+
+.priority-later {
+  background: var(--chip-later);
+}
+
+.todo-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.btn.small {
+  padding: 0.44rem 0.65rem;
+  font-size: 0.86rem;
+}
+
+.btn.warn {
+  background: #3a1f17;
+  color: #fff;
+}
+
+.btn.warn:hover {
+  background: #2a140f;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 700px) {
+  .todo-form {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .todo-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}

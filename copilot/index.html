@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Priority Todo Board</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;700&family=Space+Grotesk:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-labelledby="app-title">
+      <header class="app-header">
+        <p class="kicker">Personal Organizer</p>
+        <h1 id="app-title">Priority Todo Board</h1>
+        <p class="subtitle">Capture tasks quickly and organize them by urgency.</p>
+      </header>
+
+      <section class="controls" aria-label="Todo controls">
+        <form id="todo-form" class="todo-form">
+          <label class="field">
+            <span>Todo</span>
+            <input
+              id="todo-input"
+              name="todo"
+              type="text"
+              placeholder="Write one task"
+              required
+              autocomplete="off"
+              maxlength="160"
+            />
+          </label>
+
+          <label class="field">
+            <span>Priority</span>
+            <select id="priority-input" name="priority" aria-label="Priority for new todo">
+              <option value="now">Now</option>
+              <option value="this week">This week</option>
+              <option value="later">Later</option>
+            </select>
+          </label>
+
+          <button type="submit" class="btn primary">Add Todo</button>
+        </form>
+
+        <div class="toolbar">
+          <button id="sort-priority" type="button" class="btn ghost">Sort by Priority</button>
+          <p id="todo-count" class="todo-count" aria-live="polite">0 todos</p>
+        </div>
+      </section>
+
+      <section aria-label="Todo list">
+        <ul id="todo-list" class="todo-list"></ul>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
