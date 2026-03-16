@@ -303,6 +303,7 @@
     /* Screen-reader only utility */
     .sr-only {
       clip: rect(0, 0, 0, 0);
+      clip-path: inset(50%);
       border: 0;
       height: 1px;
       margin: -1px;
@@ -325,7 +326,7 @@
 <body>
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
-  <main id="main-content">
+  <main id="main-content" tabindex="-1">
     <h1>My Todos</h1>
 
     <form id="add-form" aria-label="Add new todo" novalidate>
