@@ -283,7 +283,9 @@
       if (!todo) return;
 
       const li = document.querySelector(`.todo-item[data-id="${id}"]`);
+      if (!li) return;
       const span = li.querySelector('.todo-text');
+      if (!span) return;
 
       const input = document.createElement('input');
       input.type = 'text';
@@ -294,7 +296,11 @@
       input.focus();
       input.select();
 
+      let committed = false;
+
       function commitEdit() {
+        if (committed) return;
+        committed = true;
         const newText = input.value.trim();
         if (newText) todo.text = newText;
         render();
