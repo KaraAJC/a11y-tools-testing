@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <style>
+        @layer config {
+            :root {
+                --color-primary: 0 50% 50%;
+                --color-text: 0 0% 15%;
+                --color-background: 0 0% 100%;
+                --color-border: 0 0% 85%;
+                --color-focus: 0 60% 60%;
+                --color-success: 140 70% 40%;
+                --color-error: 0 70% 50%;
+                --color-priority-now: 0 70% 50%;
+                --color-priority-week: 40 70% 50%;
+                --color-priority-later: 200 70% 50%;
+
+                --spacing-xs: 0.25rem;
+                --spacing-sm: 0.5rem;
+                --spacing-md: 1rem;
+                --spacing-lg: 1.5rem;
+                --spacing-xl: 2rem;
+
+                --radius-sm: 0.25rem;
+                --radius-md: 0.5rem;
+                --radius-lg: 0.75rem;
+
+                --font-size-sm: 0.875rem;
+                --font-size-base: 1rem;
+                --font-size-lg: 1.125rem;
+                --font-size-xl: 1.25rem;
+            }
+        }
+
+        @layer resets {
+            * {
+                box-sizing: border-box;
+            }
+
+            html {
+                block-size: 100%;
+            }
+
+            body {
+                margin: 0;
+                padding: var(--spacing-md);
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                font-size: var(--font-size-base);
+                line-height: 1.5;
+                color: oklch(var(--color-text));
+                background-color: oklch(var(--color-background));
+            }
+
+            h1 {
+                font-size: var(--font-size-xl);
+                font-weight: 600;
+                margin-block-start: 0;
+                margin-block-end: var(--spacing-md);
+            }
+
+            button {
+                font-family: inherit;
+                font-size: inherit;
+                line-height: inherit;
+                cursor: pointer;
+                border: none;
+                padding: var(--spacing-sm) var(--spacing-md);
+                border-radius: var(--radius-sm);
+                background-color: oklch(var(--color-primary));
+                color: white;
+                font-weight: 500;
+                transition: background-color 0.2s ease;
+            }
+
+            button:hover {
+                background-color: oklch(var(--color-primary) / 0.8);
+            }
+
+            button:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+
+            input[type="text"] {
+                font-family: inherit;
+                font-size: inherit;
+                line-height: inherit;
+                padding: var(--spacing-sm) var(--spacing-md);
+                border: 1px solid oklch(var(--color-border));
+                border-radius: var(--radius-sm);
+                background-color: white;
+                color: oklch(var(--color-text));
+                transition: border-color 0.2s ease;
+            }
+
+            input[type="text"]:focus-visible {
+                outline: 2px solid oklch(var(--color-focus));
+                outline-offset: 2px;
+            }
+
+            input[type="text"]:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+
+            select {
+                font-family: inherit;
+                font-size: inherit;
+                line-height: inherit;
+                padding: var(--spacing-sm) var(--spacing-md);
+                border: 1px solid oklch(var(--color-border));
+                border-radius: var(--radius-sm);
+                background-color: white;
+                color: oklch(var(--color-text));
+                cursor: pointer;
+                transition: border-color 0.2s ease;
+            }
+
+            select:focus-visible {
+                outline: 2px solid oklch(var(--color-focus));
+                outline-offset: 2px;
+            }
+
+            ul {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+
+            li {
+                margin-block-end: var(--spacing-sm);
+            }
+
+            @media (prefers-reduced-motion: no-preference) {
+                * {
+                    transition-property: background-color, border-color, color, opacity, transform;
+                    transition-duration: 0.2s;
+                    transition-timing-function: ease;
+                }
+            }
+        }
+
+        @layer components {
+            .c-todo-container {
+                max-width: 600px;
+                margin-inline: auto;
+                padding-block: var(--spacing-xl);
+            }
+
+            .c-form {
+                display: flex;
+                flex-direction: column;
+                gap: var(--spacing-sm);
+                margin-block-end: var(--spacing-lg);
+                padding: var(--spacing-md);
+                border: 1px solid oklch(var(--color-border));
+                border-radius: var(--radius-md);
+                background-color: oklch(var(--color-background) / 0.5);
+            }
+
+            .c-form-row {
+                display: flex;
+                gap: var(--spacing-sm);
+                align-items: flex-end;
+            }
+
+            .c-form-text {
+                flex: 1;
+            }
+
+            .c-form-actions {
+                display: flex;
+                gap: var(--spacing-sm);
+            }
+
+            .c-todo-list {
+                display: flex;
+                flex-direction: column;
+                gap: var(--spacing-sm);
+            }
+
+            .c-todo-item {
+                display: flex;
+                gap: var(--spacing-sm);
+                align-items: center;
+                padding: var(--spacing-md);
+                border: 1px solid oklch(var(--color-border));
+                border-radius: var(--radius-md);
+                background-color: white;
+                transition: transform 0.2s ease, opacity 0.2s ease;
+            }
+
+            .c-todo-item:hover {
+                transform: translateX(4px);
+            }
+
+            .c-todo-item.js-editing {
+                background-color: oklch(var(--color-background) / 0.8);
+            }
+
+            .c-todo-item.dragging {
+                opacity: 0.5;
+            }
+
+            .c-todo-content {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                gap: var(--spacing-xs);
+            }
+
+            .c-todo-text {
+                font-size: var(--font-size-base);
+                word-wrap: break-word;
+            }
+
+            .c-todo-text.js-editing {
+                display: none;
+            }
+
+            .c-todo-text-input {
+                display: none;
+                width: 100%;
+                font-size: var(--font-size-base);
+            }
+
+            .c-todo-text-input.js-editing {
+                display: block;
+            }
+
+            .c-todo-meta {
+                display: flex;
+                align-items: center;
+                gap: var(--spacing-sm);
+                font-size: var(--font-size-sm);
+                color: oklch(var(--color-text) / 0.7);
+            }
+
+            .c-todo-priority {
+                padding: var(--spacing-xs) var(--spacing-sm);
+                border-radius: var(--radius-sm);
+                font-size: var(--font-size-sm);
+                font-weight: 500;
+                text-transform: capitalize;
+            }
+
+            .c-todo-priority.now {
+                background-color: oklch(var(--color-priority-now) / 0.1);
+                color: oklch(var(--color-priority-now));
+            }
+
+            .c-todo-priority.week {
+                background-color: oklch(var(--color-priority-week) / 0.1);
+                color: oklch(var(--color-priority-week));
+            }
+
+            .c-todo-priority.later {
+                background-color: oklch(var(--color-priority-later) / 0.1);
+                color: oklch(var(--color-priority-later));
+            }
+
+            .c-todo-actions {
+                display: flex;
+                gap: var(--spacing-xs);
+                margin-inline-start: auto;
+            }
+
+            .c-button-icon {
+                padding: var(--spacing-xs);
+                background-color: transparent;
+                color: oklch(var(--color-text) / 0.6);
+                border-radius: var(--radius-sm);
+            }
+
+            .c-button-icon:hover {
+                background-color: oklch(var(--color-border));
+                color: oklch(var(--color-text));
+            }
+
+            .c-button-icon:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+
+            .c-sort-controls {
+                display: flex;
+                gap: var(--spacing-sm);
+                margin-bottom: var(--spacing-lg);
+                align-items: center;
+            }
+
+            .c-sort-controls label {
+                font-weight: 500;
+                color: oklch(var(--color-text) / 0.8);
+            }
+
+            .c-empty-state {
+                text-align: center;
+                padding: var(--spacing-xl);
+                color: oklch(var(--color-text) / 0.6);
+                font-style: italic;
+            }
+
+            .c-error-message {
+                color: oklch(var(--color-error));
+                font-size: var(--font-size-sm);
+                margin-block-start: var(--spacing-xs);
+            }
+        }
+
+        @layer utilities {
+            .u-hidden {
+                display: none;
+            }
+
+            .u-visible {
+                display: block;
+            }
+
+            .u-sr-only {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                white-space: nowrap;
+                border: 0;
+            }
+
+            .u-flex {
+                display: flex;
+            }
+
+            .u-flex-column {
+                flex-direction: column;
+            }
+
+            .u-gap-sm {
+                gap: var(--spacing-sm);
+            }
+
+            .u-gap-md {
+                gap: var(--spacing-md);
+            }
+
+            .u-align-center {
+                align-items: center;
+            }
+
+            .u-justify-between {
+                justify-content: space-between;
+            }
+
+            .u-justify-end {
+                justify-content: flex-end;
+            }
+
+            .u-w-full {
+                width: 100%;
+            }
+
+            .u-flex-1 {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="c-todo-container">
+        <h1>Todo List</h1>
+
+        <div class="c-form">
+            <div class="c-form-row">
+                <div class="c-form-text">
+                    <input
+                        type="text"
+                        id="todo-input"
+                        class="u-w-full"
+                        placeholder="Add a new todo..."
+                        aria-label="Add a new todo"
+                        autocomplete="off"
+                    >
+                    <div id="input-error" class="c-error-message u-hidden" role="alert"></div>
+                </div>
+                <div class="c-form-actions">
+                    <select id="priority-select" aria-label="Priority">
+                        <option value="now">Now</option>
+                        <option value="week" selected>This week</option>
+                        <option value="later">Later</option>
+                    </select>
+                    <button id="add-button" aria-label="Add todo">
+                        Add
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="c-sort-controls">
+            <label for="sort-select">Sort by:</label>
+            <select id="sort-select">
+                <option value="priority">Priority</option>
+                <option value="created">Date created</option>
+                <option value="updated">Date updated</option>
+            </select>
+        </div>
+
+        <ul id="todo-list" class="c-todo-list" role="list">
+            <!-- Todo items will be dynamically inserted here -->
+        </ul>
+
+        <div id="empty-state" class="c-empty-state u-visible">
+            No todos yet. Add your first todo above!
+        </div>
+    </div>
+
+    <script>
+        class TodoApp {
+            constructor() {
+                this.todos = [];
+                this.nextId = 1;
+                this.editingId = null;
+
+                this.todoInput = document.getElementById('todo-input');
+                this.prioritySelect = document.getElementById('priority-select');
+                this.addButton = document.getElementById('add-button');
+                this.todoList = document.getElementById('todo-list');
+                this.emptyState = document.getElementById('empty-state');
+                this.sortSelect = document.getElementById('sort-select');
+                this.inputError = document.getElementById('input-error');
+
+                this.initEventListeners();
+                this.updateDisplay();
+            }
+
+            initEventListeners() {
+                this.addButton.addEventListener('click', () => this.addTodo());
+                this.todoInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.addTodo();
+                    }
+                });
+                this.todoInput.addEventListener('input', () => this.clearError());
+                this.sortSelect.addEventListener('change', () => this.updateDisplay());
+            }
+
+            addTodo() {
+                const text = this.todoInput.value.trim();
+                const priority = this.prioritySelect.value;
+
+                if (!text) {
+                    this.showError('Please enter a todo text');
+                    return;
+                }
+
+                const todo = {
+                    id: this.nextId++,
+                    text: text,
+                    priority: priority,
+                    created: new Date(),
+                    updated: new Date()
+                };
+
+                this.todos.push(todo);
+                this.todoInput.value = '';
+                this.prioritySelect.value = 'week';
+                this.clearError();
+                this.updateDisplay();
+            }
+
+            deleteTodo(id) {
+                this.todos = this.todos.filter(todo => todo.id !== id);
+                if (this.editingId === id) {
+                    this.editingId = null;
+                }
+                this.updateDisplay();
+            }
+
+            startEdit(id) {
+                if (this.editingId && this.editingId !== id) {
+                    this.cancelEdit();
+                }
+                this.editingId = id;
+                this.updateDisplay();
+
+                // Focus on the input field after a short delay to ensure DOM is ready
+                setTimeout(() => {
+                    const input = document.querySelector(`.js-editing-${id}`);
+                    if (input) {
+                        input.focus();
+                        input.select();
+                    }
+                }, 10);
+            }
+
+            saveEdit(id) {
+                const input = document.querySelector(`.js-editing-${id}`);
+                const newText = input.value.trim();
+
+                if (!newText) {
+                    this.showError('Todo text cannot be empty');
+                    return;
+                }
+
+                const todo = this.todos.find(t => t.id === id);
+                if (todo) {
+                    todo.text = newText;
+                    todo.updated = new Date();
+                }
+
+                this.editingId = null;
+                this.updateDisplay();
+            }
+
+            cancelEdit() {
+                if (this.editingId) {
+                    this.editingId = null;
+                    this.updateDisplay();
+                }
+            }
+
+            updatePriority(id, newPriority) {
+                const todo = this.todos.find(t => t.id === id);
+                if (todo && todo.priority !== newPriority) {
+                    todo.priority = newPriority;
+                    todo.updated = new Date();
+                    this.updateDisplay();
+                }
+            }
+
+            getPrioritySortValue(priority) {
+                const priorityMap = { now: 1, week: 2, later: 3 };
+                return priorityMap[priority] || 3;
+            }
+
+            sortTodos(todos, sortBy) {
+                const sorted = [...todos];
+
+                switch (sortBy) {
+                    case 'priority':
+                        return sorted.sort((a, b) => {
+                            const priorityDiff = this.getPrioritySortValue(a.priority) - this.getPrioritySortValue(b.priority);
+                            if (priorityDiff !== 0) return priorityDiff;
+                            return b.updated - a.updated; // Secondary sort by updated date
+                        });
+                    case 'created':
+                        return sorted.sort((a, b) => b.created - a.created);
+                    case 'updated':
+                        return sorted.sort((a, b) => b.updated - a.updated);
+                    default:
+                        return sorted;
+                }
+            }
+
+            formatDate(date) {
+                const now = new Date();
+                const diff = now - date;
+                const minutes = Math.floor(diff / 60000);
+                const hours = Math.floor(diff / 3600000);
+                const days = Math.floor(diff / 86400000);
+
+                if (minutes < 1) return 'Just now';
+                if (minutes < 60) return `${minutes}m ago`;
+                if (hours < 24) return `${hours}h ago`;
+                if (days < 7) return `${days}d ago`;
+
+                return date.toLocaleDateString();
+            }
+
+            updateDisplay() {
+                const sortBy = this.sortSelect.value;
+                const sortedTodos = this.sortTodos(this.todos, sortBy);
+
+                // Clear the list
+                this.todoList.innerHTML = '';
+
+                if (sortedTodos.length === 0) {
+                    this.emptyState.classList.remove('u-hidden');
+                    this.emptyState.classList.add('u-visible');
+                    return;
+                }
+
+                this.emptyState.classList.remove('u-visible');
+                this.emptyState.classList.add('u-hidden');
+
+                // Add todos to the list
+                sortedTodos.forEach(todo => {
+                    const todoElement = this.createTodoElement(todo);
+                    this.todoList.appendChild(todoElement);
+                });
+            }
+
+            createTodoElement(todo) {
+                const li = document.createElement('li');
+                li.className = 'c-todo-item';
+                li.dataset.id = todo.id;
+
+                if (this.editingId === todo.id) {
+                    li.classList.add('js-editing');
+                }
+
+                li.innerHTML = `
+                    <div class="c-todo-content">
+                        <div class="c-todo-text ${this.editingId === todo.id ? 'js-editing' : ''}">${this.escapeHtml(todo.text)}</div>
+                        <input
+                            type="text"
+                            class="c-todo-text-input ${this.editingId === todo.id ? `js-editing js-editing-${todo.id}` : ''}"
+                            value="${this.escapeHtml(todo.text)}"
+                            aria-label="Edit todo text"
+                        >
+                        <div class="c-todo-meta">
+                            <span class="c-todo-priority ${todo.priority}">${todo.priority}</span>
+                            <span class="u-sr-only">•</span>
+                            <span>Updated ${this.formatDate(todo.updated)}</span>
+                        </div>
+                    </div>
+                    <div class="c-todo-actions">
+                        <select class="priority-select" data-id="${todo.id}" aria-label="Change priority">
+                            <option value="now" ${todo.priority === 'now' ? 'selected' : ''}>Now</option>
+                            <option value="week" ${todo.priority === 'week' ? 'selected' : ''}>This week</option>
+                            <option value="later" ${todo.priority === 'later' ? 'selected' : ''}>Later</option>
+                        </select>
+                        <button class="c-button-icon" onclick="app.startEdit(${todo.id})" aria-label="Edit todo" title="Edit">
+                            ✏️
+                        </button>
+                        <button class="c-button-icon" onclick="app.deleteTodo(${todo.id})" aria-label="Delete todo" title="Delete">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+
+                // Add event listeners for the edit input
+                const input = li.querySelector(`.js-editing-${todo.id}`);
+                if (input) {
+                    input.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            this.saveEdit(todo.id);
+                        } else if (e.key === 'Escape') {
+                            this.cancelEdit();
+                        }
+                    });
+
+                    input.addEventListener('blur', () => {
+                        // Don't save if clicking on another edit button
+                        if (!document.activeElement.closest('.c-button-icon')) {
+                            this.saveEdit(todo.id);
+                        }
+                    });
+                }
+
+                // Add event listener for priority change
+                const prioritySelect = li.querySelector('.priority-select');
+                prioritySelect.addEventListener('change', (e) => {
+                    this.updatePriority(todo.id, e.target.value);
+                });
+
+                return li;
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            showError(message) {
+                this.inputError.textContent = message;
+                this.inputError.classList.remove('u-hidden');
+                this.todoInput.focus();
+            }
+
+            clearError() {
+                this.inputError.classList.add('u-hidden');
+            }
+        }
+
+        // Initialize the app
+        const app = new TodoApp();
+    </script>
+</body>
+</html>
