@@ -1,0 +1,309 @@
+    <!-- Add Todo Form -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Add New Todo</h2>
+        <div class="flex gap-3">
+            <input
+                type="text"
+                id="todoInput"
+                placeholder="Enter your todo..."
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                maxlength="100"
+            >
+            <select
+                id="prioritySelect"
+                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            >
+                <option value="now">Now</option>
+                <option value="this-week" selected>This Week</option>
+                <option value="later">Later</option>
+            </select>
+            <button
+                id="addButton"
+                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
+            >
+                <i class="fas fa-plus mr-2"></i>Add
+            </button>
+        </div>
+    </div>
+
+    <!-- Todo Lists by Priority -->
+    <div class="space-y-6">
+        <!-- Now Priority -->
+        <div class="bg-white rounded-lg shadow-md">
+            <div class="bg-red-500 text-white px-6 py-3 rounded-t-lg">
+                <h3 class="text-lg font-semibold">
+                    <i class="fas fa-exclamation-circle mr-2"></i>Now
+                    <span id="nowCount" class="ml-2 bg-red-600 px-2 py-1 rounded-full text-sm">0</span>
+                </h3>
+            </div>
+            <div id="nowTodos" class="p-6 space-y-3 min-h-[60px]">
+                <p class="text-gray-500 text-center py-4">No urgent tasks yet</p>
+            </div>
+        </div>
+
+        <!-- This Week Priority -->
+        <div class="bg-white rounded-lg shadow-md">
+            <div class="bg-yellow-500 text-white px-6 py-3 rounded-t-lg">
+                <h3 class="text-lg font-semibold">
+                    <i class="fas fa-calendar-week mr-2"></i>This Week
+                    <span id="weekCount" class="ml-2 bg-yellow-600 px-2 py-1 rounded-full text-sm">0</span>
+                </h3>
+            </div>
+            <div id="weekTodos" class="p-6 space-y-3 min-h-[60px]">
+                <p class="text-gray-500 text-center py-4">No weekly tasks yet</p>
+            </div>
+        </div>
+
+        <!-- Later Priority -->
+        <div class="bg-white rounded-lg shadow-md">
+            <div class="bg-green-500 text-white px-6 py-3 rounded-t-lg">
+                <h3 class="text-lg font-semibold">
+                    <i class="fas fa-clock mr-2"></i>Later
+                    <span id="laterCount" class="ml-2 bg-green-600 px-2 py-1 rounded-full text-sm">0</span>
+                </h3>
+            </div>
+            <div id="laterTodos" class="p-6 space-y-3 min-h-[60px]">
+                <p class="text-gray-500 text-center py-4">No future tasks yet</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    class TodoApp {
+        constructor() {
+            this.todos = [];
+            this.nextId = 1;
+            this.init();
+        }
+
+        init() {
+            this.todoInput = document.getElementById('todoInput');
+            this.prioritySelect = document.getElementById('prioritySelect');
+            this.addButton = document.getElementById('addButton');
+            this.nowTodos = document.getElementById('nowTodos');
+            this.weekTodos = document.getElementById('weekTodos');
+            this.laterTodos = document.getElementById('laterTodos');
+            this.nowCount = document.getElementById('nowCount');
+            this.weekCount = document.getElementById('weekCount');
+            this.laterCount = document.getElementById('laterCount');
+
+            this.addButton.addEventListener('click', () => this.addTodo());
+            this.todoInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.addTodo();
+            });
+
+            this.updateDisplay();
+        }
+
+        addTodo() {
+            const text = this.todoInput.value.trim();
+            const priority = this.prioritySelect.value;
+
+            if (!text) {
+                this.showMessage('Please enter a todo task', 'error');
+                return;
+            }
+
+            const todo = {
+                id: this.nextId++,
+                text: text,
+                priority: priority,
+                createdAt: new Date()
+            };
+
+            this.todos.push(todo);
+            this.todoInput.value = '';
+            this.updateDisplay();
+            this.showMessage('Todo added successfully!', 'success');
+        }
+
+        deleteTodo(id) {
+            this.todos = this.todos.filter(todo => todo.id !== id);
+            this.updateDisplay();
+            this.showMessage('Todo deleted', 'info');
+        }
+
+        editTodo(id) {
+            const todo = this.todos.find(t => t.id === id);
+            if (!todo) return;
+
+            const todoElement = document.querySelector(`[data-id="${id}"]`);
+            const textElement = todoElement.querySelector('.todo-text');
+            const editButton = todoElement.querySelector('.edit-button');
+            const deleteButton = todoElement.querySelector('.delete-button');
+
+            // Create edit input
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = todo.text;
+            input.className = 'flex-1 px-3 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none';
+            input.maxLength = 100;
+
+            // Create save button
+            const saveButton = document.createElement('button');
+            saveButton.innerHTML = '<i class="fas fa-check"></i>';
+            saveButton.className = 'px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors ml-2';
+            saveButton.onclick = () => this.saveTodo(id, input.value);
+
+            // Create cancel button
+            const cancelButton = document.createElement('button');
+            cancelButton.innerHTML = '<i class="fas fa-times"></i>';
+            cancelButton.className = 'px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors ml-2';
+            cancelButton.onclick = () => this.updateDisplay();
+
+            // Replace elements
+            textElement.replaceWith(input);
+            editButton.replaceWith(saveButton);
+            deleteButton.replaceWith(cancelButton);
+
+            input.focus();
+            input.select();
+        }
+
+        saveTodo(id, newText) {
+            const todo = this.todos.find(t => t.id === id);
+            if (todo && newText.trim()) {
+                todo.text = newText.trim();
+                this.updateDisplay();
+                this.showMessage('Todo updated successfully!', 'success');
+            } else {
+                this.updateDisplay();
+            }
+        }
+
+        changePriority(id, newPriority) {
+            const todo = this.todos.find(t => t.id === id);
+            if (todo) {
+                todo.priority = newPriority;
+                this.updateDisplay();
+                this.showMessage('Priority updated!', 'success');
+            }
+        }
+
+        updateDisplay() {
+            // Clear all containers
+            this.nowTodos.innerHTML = '';
+            this.weekTodos.innerHTML = '';
+            this.laterTodos.innerHTML = '';
+
+            // Sort todos by priority: now -> this week -> later
+            const sortedTodos = [...this.todos].sort((a, b) => {
+                const priorityOrder = { 'now': 0, 'this-week': 1, 'later': 2 };
+                return priorityOrder[a.priority] - priorityOrder[b.priority];
+            });
+
+            // Count todos by priority
+            const counts = { now: 0, 'this-week': 0, later: 0 };
+
+            // Add todos to appropriate containers
+            sortedTodos.forEach(todo => {
+                counts[todo.priority]++;
+                const todoElement = this.createTodoElement(todo);
+
+                switch (todo.priority) {
+                    case 'now':
+                        this.nowTodos.appendChild(todoElement);
+                        break;
+                    case 'this-week':
+                        this.weekTodos.appendChild(todoElement);
+                        break;
+                    case 'later':
+                        this.laterTodos.appendChild(todoElement);
+                        break;
+                }
+            });
+
+            // Update counters
+            this.nowCount.textContent = counts.now;
+            this.weekCount.textContent = counts['this-week'];
+            this.laterCount.textContent = counts.later;
+
+            // Show empty messages if needed
+            if (counts.now === 0) {
+                this.nowTodos.innerHTML = '<p class="text-gray-500 text-center py-4">No urgent tasks yet</p>';
+            }
+            if (counts['this-week'] === 0) {
+                this.weekTodos.innerHTML = '<p class="text-gray-500 text-center py-4">No weekly tasks yet</p>';
+            }
+            if (counts.later === 0) {
+                this.laterTodos.innerHTML = '<p class="text-gray-500 text-center py-4">No future tasks yet</p>';
+            }
+        }
+
+        createTodoElement(todo) {
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors';
+            div.setAttribute('data-id', todo.id);
+
+            const priorityColors = {
+                'now': 'text-red-600 bg-red-100',
+                'this-week': 'text-yellow-600 bg-yellow-100',
+                'later': 'text-green-600 bg-green-100'
+            };
+
+            const priorityLabels = {
+                'now': 'Now',
+                'this-week': 'This Week',
+                'later': 'Later'
+            };
+
+            div.innerHTML = `
+                <span class="px-2 py-1 rounded-full text-xs font-medium $${priorityColors[todo.priority]}">
+                    $${priorityLabels[todo.priority]}
+                </span>
+                <span class="todo-text flex-1 text-gray-800">$${this.escapeHtml(todo.text)}</span>
+                <select onchange="todoApp.changePriority($${todo.id}, this.value)" class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                    <option value="now" $${todo.priority === 'now' ? 'selected' : ''}>Now</option>
+                    <option value="this-week" $${todo.priority === 'this-week' ? 'selected' : ''}>This Week</option>
+                    <option value="later" $${todo.priority === 'later' ? 'selected' : ''}>Later</option>
+                </select>
+                <button onclick="todoApp.editTodo($${todo.id})" class="edit-button px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button onclick="todoApp.deleteTodo(${todo.id})" class="delete-button px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+
+            return div;
+        }
+
+        escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        showMessage(message, type) {
+            // Create and show a temporary message
+            const messageDiv = document.createElement('div');
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-500'
+            };
+
+            messageDiv.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300`;
+            messageDiv.textContent = message;
+
+            document.body.appendChild(messageDiv);
+
+            // Animate in
+            setTimeout(() => {
+                messageDiv.classList.remove('translate-x-full');
+            }, 100);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                messageDiv.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(messageDiv);
+                }, 300);
+            }, 3000);
+        }
+    }
+
+    // Initialize the app
+    const todoApp = new TodoApp();
+</script>
