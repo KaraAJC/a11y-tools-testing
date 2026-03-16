@@ -24,7 +24,7 @@ Each todo is a plain object:
 { id, text, priority, createdAt }
 ```
 
-- `id` — unique identifier (timestamp or incrementing integer)
+- `id` — unique identifier (incrementing integer)
 - `text` — the todo string
 - `priority` — one of `'now'`, `'this-week'`, `'later'`
 - `createdAt` — insertion timestamp (used for stable ordering when sort is off)
@@ -71,6 +71,7 @@ When no todos exist: display a subtle message — "No todos yet — add one abov
 | Add with whitespace-only input | Trimmed — treated as empty, no-op |
 | Inline edit — save empty text | Cancels edit, keeps original text |
 | Inline edit — press Enter | Saves and exits edit mode |
+| Inline edit — press Escape | Cancels edit, keeps original text |
 | Inline edit — blur (click away) | Saves and exits edit mode |
 | Delete | Immediate removal, no confirmation |
 | Priority badge click | Cycles Now → This Week → Later → Now |
