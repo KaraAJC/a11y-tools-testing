@@ -313,6 +313,12 @@
 
       input.addEventListener('blur', commitEdit);
     }
+
+    // --- Sort toggle ---
+    document.getElementById('sort-toggle').addEventListener('click', function() {
+      sortByPriority = !sortByPriority;
+      render();
+    });
   </script>
 </body>
 </html>
