@@ -143,6 +143,9 @@ When changing priority, the badge button is replaced with an inline `<select>`.
 - Every interactive element keyboard-accessible natively (no `tabindex` hacks)
 - Priority badge conveys label in text AND color — never color alone
 - All buttons have descriptive `aria-label` values that include todo text
+- Priority badge `aria-label` includes the **current priority value**: "Change priority for [text], currently [priority]"
+- Icon-only buttons (`✏`, `✕`) wrap their text in `<span aria-hidden="true">` for AT robustness
+- After a successful edit save, focus returns to the pencil button of the saved todo item (same as cancel)
 - `role="status"` live region announces all state changes (add, edit, delete, priority change, sort toggle)
 - Focus managed explicitly on delete (returns to next/previous item or add input)
 - Focus set to inline edit input when edit mode activates; returns to pencil button on cancel
