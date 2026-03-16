@@ -33,7 +33,9 @@
     }
 
     main {
-      background: rgba(255, 255, 255, 0.15);
+      /* Dark glass: rgba(0,0,0,0.25) over gradient → effective bg ~#534c95, L≈0.094
+         White text on card = 7.3:1 (AA pass). Light glass was too mid-toned (4.2:1 fail). */
+      background: rgba(0, 0, 0, 0.25);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.25);
@@ -61,7 +63,7 @@
     }
 
     #add-form label {
-      color: rgba(255, 255, 255, 0.85);
+      color: #ffffff;
       font-size: 0.8rem;
       font-weight: 600;
       text-transform: uppercase;
@@ -77,7 +79,7 @@
     #add-form .add-error                     { grid-column: 1 / -1; grid-row: 3; }
 
     .add-error {
-      color: #ffd93d;
+      color: #ffffff;
       font-size: 0.8rem;
     }
 
@@ -91,7 +93,8 @@
       width: 100%;
     }
 
-    input[type="text"]::placeholder { color: rgba(255, 255, 255, 0.55); }
+    /* rgba(255,255,255,0.55) was ~1.84:1 on glass input bg — fail. White = 4.5:1+ — pass. */
+    input[type="text"]::placeholder { color: rgba(255, 255, 255, 0.9); }
 
     input[type="text"]:focus, select:focus {
       outline: 3px solid #ffffff;
@@ -121,7 +124,8 @@
     .btn:hover { background: rgba(255, 255, 255, 0.9); }
 
     .btn:focus {
-      outline: 3px solid #ffffff;
+      /* #764ba2 outline on white button = 5.7:1 (AA pass). White on white was 1:1 fail. */
+      outline: 3px solid #764ba2;
       outline-offset: 2px;
     }
 
@@ -159,8 +163,10 @@
     }
 
     #todo-list li {
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      /* Dark glass items: rgba(0,0,0,0.2) over card → effective bg ~#423d77, L≈0.063
+         White text on item = 9.3:1 (AA pass). Light rgba(255,255,255,0.12) was 3.35:1 fail. */
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 10px;
       display: flex;
       align-items: center;
@@ -220,7 +226,7 @@
       background: transparent;
       border: 1px solid rgba(255, 255, 255, 0.3);
       border-radius: 6px;
-      color: rgba(255, 255, 255, 0.8);
+      color: #ffffff;
       cursor: pointer;
       font-size: 0.9rem;
       line-height: 1;
@@ -249,7 +255,8 @@
     }
 
     .edit-input:focus {
-      outline: 3px solid #ffd93d;
+      /* #764ba2 on near-white input = 5.4:1 (AA pass). Yellow #ffd93d on near-white was 1.24:1 fail. */
+      outline: 3px solid #764ba2;
       outline-offset: 2px;
     }
 
@@ -259,15 +266,15 @@
     }
 
     .edit-error {
-      color: #ffd93d;
+      color: #ffffff;
       font-size: 0.8rem;
       width: 100%;
       margin-top: 2px;
     }
 
     .save-btn {
-      background: #27ae60;
-      border: 1px solid #27ae60;
+      background: #1a7a3a;
+      border: 1px solid #1a7a3a;
       border-radius: 6px;
       color: #ffffff;
       cursor: pointer;
@@ -276,7 +283,7 @@
       padding: 5px 10px;
     }
 
-    .save-btn:hover { background: #219a52; }
+    .save-btn:hover { background: #145e2c; }
 
     .save-btn:focus {
       outline: 3px solid #ffffff;
@@ -317,7 +324,7 @@
 
     /* Empty state */
     .empty-state {
-      color: rgba(255, 255, 255, 0.6);
+      color: #ffffff;
       font-size: 0.9rem;
       padding: 16px 0;
       text-align: center;
