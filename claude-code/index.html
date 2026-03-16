@@ -276,6 +276,37 @@
         startEdit(id);
       }
     });
+
+    // --- Inline edit ---
+    function startEdit(id) {
+      const todo = todos.find(t => t.id === id);
+      if (!todo) return;
+
+      const li = document.querySelector(`.todo-item[data-id="${id}"]`);
+      const span = li.querySelector('.todo-text');
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'todo-edit-input';
+      input.value = todo.text;
+
+      li.replaceChild(input, span);
+      input.focus();
+      input.select();
+
+      function commitEdit() {
+        const newText = input.value.trim();
+        if (newText) todo.text = newText;
+        render();
+      }
+
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); commitEdit(); }
+        if (e.key === 'Escape') { render(); } // cancel — discard changes
+      });
+
+      input.addEventListener('blur', commitEdit);
+    }
   </script>
 </body>
 </html>
