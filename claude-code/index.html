@@ -12,11 +12,13 @@
   <div id="app">
     <header>
       <h1>Todo List</h1>
-      <button id="sort-toggle">Sort by Priority</button>
+      <button id="sort-toggle" type="button">Sort by Priority</button>
     </header>
 
     <form id="add-form">
+      <label for="new-todo-input">New todo</label>
       <input type="text" id="new-todo-input" placeholder="Add a new todo..." autocomplete="off">
+      <label for="priority-select">Priority</label>
       <select id="priority-select">
         <option value="now">Now</option>
         <option value="this-week">This Week</option>
