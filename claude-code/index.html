@@ -239,6 +239,18 @@
 
     // Initial render
     render();
+
+    // --- Add todo ---
+    document.getElementById('add-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const input = document.getElementById('new-todo-input');
+      const text = input.value.trim();
+      if (!text) return;
+      const priority = document.getElementById('priority-select').value;
+      todos.push({ id: nextId++, text, priority, createdAt: Date.now() });
+      input.value = '';
+      render();
+    });
   </script>
 </body>
 </html>
