@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>a11y Tools Testing</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    h1 {
+      margin-bottom: 1.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #666;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #ccc;
+      text-align: left;
+    }
+    td {
+      vertical-align: top;
+      padding: 0.75rem 1rem 0.75rem 0;
+    }
+    td a {
+      font-size: 1.1rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    td iframe {
+      height: 300px;
+      border: 1px solid #ccc;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <main id="tools-testing-content">
+  <h1>a11y Tools Testing</h1>
+  <section>
+    <p>This page is for testing various a11y tools on different AI platforms. Each row in the table below represents a platform, with the left column showing the platform without any a11y tools and the right showing the a11y tools applied.</p>
+    <p>Though the iframes may show a limited view of each platforms a11y performance, its useful to review the changes in the axe dev tool testing done.</p>
+  </section>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Platform</th>
+        <th scope="col">With a11y tool</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <a href="claude-chat/">claude-chat</a>
+          <iframe src="claude-chat/" title="claude-chat"></iframe>
+          <img src="axe-result-images/claude chat.png" alt="axe results for claude-chat" style="width: 100%; margin-top: 0.5rem; border: 1px solid #ccc;">
+        </td>
+        <td>
+          <a href="claude-chat-using-frontend-a11y/">claude-chat-using-frontend-a11y</a>
+          <iframe src="claude-chat-using-frontend-a11y/" title="claude-chat-using-frontend-a11y"></iframe>
+                    <img src="axe-result-images/claude chat with frontend a11y.png" alt="axe results for claude-chat-using-frontend-a11y" style="width: 100%; margin-top: 0.5rem; border: 1px solid #ccc;">
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a href="claude-code/">claude-code</a>
+          <iframe src="claude-code/" title="claude-code"></iframe>
+                    <img src="axe-result-images/claude code.png" alt="axe results for claude-code" style="width: 100%; margin-top: 0.5rem; border: 1px solid #ccc;">
+        </td>
+        <td>
+          <a href="claude-code-with-a11y-agents/">claude-code-with-a11y-agents</a>
+          <iframe src="claude-code-with-a11y-agents/" title="claude-code-with-a11y-agents"></iframe>
+                    <img src="axe-result-images/claude code with a11y agents.png" alt="axe results for claude-code-with-a11y-agents" style="width: 100%; margin-top: 0.5rem; border: 1px solid #ccc;">
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a href="copilot/">copilot</a>
+          <iframe src="copilot/" title="copilot"></iframe>
+                    <img src="axe-result-images/copilot.png" alt="axe results for copilot" style="width: 100%; margin-top: 0.5rem; border: 1px solid #ccc;">
+        </td>
+        <td>
+          <a href="copilot-with-codea11y/">copilot-with-codea11y</a>
+          <iframe src="copilot-with-codea11y/" title="copilot-with-codea11y"></iframe>
+                    <img src="axe-result-images/copilot with codea11y.png" alt="axe results for copilot-with-codea11y" style="width: 100%; margin-top: 0.5rem; border: 1px solid #ccc;">
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a href="thaura/">thaura</a>
+          <iframe src="thaura/" title="thaura"></iframe>
+                    <img src="axe-result-images/thaura.png" alt="axe results for thaura" style="width: 100%; margin-top: 0.5rem; border: 1px solid #ccc;">
+        </td>
+        <td>
+          <a href="thaura-with-a11y-rules/">thaura-with-a11y-rules</a>
+          <iframe src="thaura-with-a11y-rules/" title="thaura-with-a11y-rules"></iframe>
+                    <img src="axe-result-images/thaura with a11y rules.png" alt="axe results for thaura-with-a11y-rules" style="width: 100%; margin-top: 0.5rem; border: 1px solid #ccc;">
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </main>
+</body>
+</html>
